@@ -26,11 +26,14 @@
 
 {% block result2 %}{% endblock %}
 
+{% block swiss %}{% endblock %}
+
 {% block login %}{% endblock %}
 
 <br><br>
 {% if username %}
 <center><p><a href="{% url 'xelo' %}">Рейтинги ФИДЕ</a></p></center>
+<center><p><a href="{% url 'xswiss' %}">Швейцарская система</a></p></center>
 {% endif %}
 
 </body>

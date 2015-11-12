@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+
+{% block swiss %}
+
+    <div class="large-offset-3">
+    <br><br>
+    <table border="1">
+        {% for value in index %}
+        <tr><td>{{ value.bill_fio }}</td><td>{{ value.bill_elo }}</td><td>{{ value.bill_koef }}</td><td>{{ value.bill_mat_ozh }}</td></tr>
+        {% endfor %}
+    </table>
+    <br><br>
+
+    </div>
+
+
+
+
+{% endblock %}

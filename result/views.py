@@ -125,3 +125,14 @@ def add_res(request):
     arg['username'] = auth.get_user().username
 
     return render_to_response('result2.html', arg)
+
+
+def swiss(request):
+    add_data = AddData
+    args = {}
+    args.update(csrf(request))
+    args['index'] = Bill.objects.all()
+#    args['form'] = add_data
+    args['username'] = auth.get_user(request).username
+    return render_to_response('swiss.html', args)
+
