@@ -13,7 +13,6 @@ def welcome(request):
 
 
 def index(request):
-#    import pdb; pdb.set_trace()
     if request.method == 'POST':
         form = AddData(request.POST)
         if form.is_valid():
@@ -29,21 +28,11 @@ def index(request):
             elo2 = elo + 10
             import pdb; pdb.set_trace()
             bill = Bill.objects.create(bill_fio=fio, bill_elo=elo, bill_koef=koe, bill_mat_ozh=elo2)
-
-#            import pdb; pdb.set_trace()
             bill.save()
 
             return redirect('index/')
 
     else:
-#        add_data = AddData
-#        args = {}
-#        args.update(csrf(request))
-#        args['index'] = Bill.objects.all()
-#        args['form'] = add_data
-#        args['username'] = auth.get_user().username
-
-#        return render_to_response('result.html', args)
          pass
 
     add_data = AddData
@@ -112,13 +101,6 @@ def add_res(request):
         new_RBnew.bill_elo = RBnew
         new_RBnew.save()
 
-
-
-
-        print(EA, RAnew)
-        print(EB, RBnew)
-#        return render_to_response('result2.html')
-
     arg = {}
     arg.update(csrf(request))
     arg['elo_data'] = Bill.objects.all()
@@ -128,11 +110,9 @@ def add_res(request):
 
 
 def swiss(request):
-    add_data = AddData
     args = {}
     args.update(csrf(request))
     args['index'] = Bill.objects.all()
-#    args['form'] = add_data
     args['username'] = auth.get_user(request).username
     return render_to_response('swiss.html', args)
 
