@@ -6,6 +6,7 @@ from django.core.context_processors import csrf
 from django.contrib import auth
 from django.core.urlresolvers import reverse
 import random
+from itertools import zip_longest
 
 
 def welcome(request):
@@ -13,6 +14,7 @@ def welcome(request):
 
 
 def index(request):
+#    import pdb; pdb.set_trace()
     if request.method == 'POST':
         form = AddData(request.POST)
         if form.is_valid():
@@ -28,11 +30,21 @@ def index(request):
             elo2 = elo + 10
             import pdb; pdb.set_trace()
             bill = Bill.objects.create(bill_fio=fio, bill_elo=elo, bill_koef=koe, bill_mat_ozh=elo2)
+
+#            import pdb; pdb.set_trace()
             bill.save()
 
             return redirect('index/')
 
     else:
+#        add_data = AddData
+#        args = {}
+#        args.update(csrf(request))
+#        args['index'] = Bill.objects.all()
+#        args['form'] = add_data
+#        args['username'] = auth.get_user().username
+
+#        return render_to_response('result.html', args)
          pass
 
     add_data = AddData
@@ -101,6 +113,13 @@ def add_res(request):
         new_RBnew.bill_elo = RBnew
         new_RBnew.save()
 
+
+
+
+        print(EA, RAnew)
+        print(EB, RBnew)
+#        return render_to_response('result2.html')
+
     arg = {}
     arg.update(csrf(request))
     arg['elo_data'] = Bill.objects.all()
@@ -110,9 +129,45 @@ def add_res(request):
 
 
 def swiss(request):
+    add_data = AddData
     args = {}
     args.update(csrf(request))
     args['index'] = Bill.objects.all()
+#    args['form'] = add_data
     args['username'] = auth.get_user(request).username
+
+
+    nov_por = Bill.objects.filter().order_by('-bill_mat_ozh')
+
+
+    a = nov_por.count() // 2
+    nov_por_1 = (nov_por[:a])
+    nov_por_2 = (nov_por[a:])
+
+    res_1 = [(nov_por_1[n].bill_fio) for n in range(nov_por_1.count()) if nov_por_1[n] in nov_por_1]
+    res_2 = [(nov_por_2[n].bill_fio) for n in range(nov_por_2.count()) if nov_por_2[n] in nov_por_2]
+    players = zip_longest(res_1, res_2)
+
+
+#, fillvalue='-'
+
+    args['res_1'] = res_1
+    args['res_2'] = res_2
+    args['players'] = players
+    print(type(players))
+
     return render_to_response('swiss.html', args)
+
+
+
+
+def porjadok():
+
+    nov_por = Bill.objects.filter().order_by('bill_elo')
+
+    a = nov_por.count() // 2
+    nov_por_1 = (nov_por[:a])
+    nov_por_2 = (nov_por[a:])
+    count_nov_por_2 = nov_por_2.count()
+
 

@@ -14,6 +14,52 @@
     </div>
 
 
+    <div class="large-offset-3">
+    <br><br>
+
+<form action="" method="post">
+    <table border="1">
+        {% for opponents_player in players %}
+            {% if None not in opponents_player %}
+                <tr>
+                    <td>
+                        {% for single_player_if_yes in opponents_player %}
+                             {{ single_player_if_yes }} <br>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for single_player in opponents_player %}
+                            <input type="radio" name="{{ opponents_player }}" value="{{ single_player }}">{{ single_player }} <br>
+                        {% endfor %}
+                            <input type="radio" name="{{ opponents_player }}" value="no">Ничья<br>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>
+                        {% for single_player_if_none in opponents_player %}
+                            {% if single_player_if_none != None %}
+                             {{ single_player_if_none }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for single_player in opponents_player %}
+                            {% if single_player != None %}
+                            <input type="radio" name="{{ opponents_player }}" value="{{ single_player }}" checked>{{ single_player }} <br>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+        <br>
+        <input type="submit" value="Играть">
+</form>
+    <br><br>
+
+    </div>
 
 
 {% endblock %}
