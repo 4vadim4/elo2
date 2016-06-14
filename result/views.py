@@ -7,7 +7,7 @@ from django.contrib import auth
 from django.core.urlresolvers import reverse
 import random
 from itertools import zip_longest
-
+import re
 
 def welcome(request):
         return render_to_response('welcome.html')
@@ -163,79 +163,26 @@ def swiss(request):
 
  #   import pdb; pdb.set_trace()
 def first_step(request):
-    print(request.POST)
-    
-
-"""
     game_data = request.POST
     for key, value in game_data.items():
         print(key, ' ', value)
         if key == 'csrfmiddlewaretoken':
             print('csrfmiddlewaretoken')
         elif value == 'no':
-            a = dir(key)
-            print(a)
-            print(type(a))
-#            a = key.split(', ')
-#            for aa in a:
-#                print(aa)
-#                print(type(aa))
 
+            a = key.split(', ')
+            for aa in a:
+                player_name = re.sub(r'[^\w\s-]+|[\d]+', r'', aa).strip()
+                print(player_name)
+                standoff = Bill.objects.get(bill_fio = player_name)
 
-#            print('Ничья у ', a)
- #           print(type(a))
+                standoff.swiss_bill_score = standoff.swiss_bill_score + 0.5
+                standoff.save()
+
         else:
             bill = Bill.objects.get(bill_fio = value)
             bill.swiss_bill_score = bill.swiss_bill_score + 1
             bill.save()
-
-            print(Bill.objects.get(bill_fio=value).swiss_bill_score)
-"""
- #
-
-
-
-'''
-
-
-        print(key)
-        print(type(key))
-        print(value)
-        print(type(value))
-
-
-
-
-
- #   for (value in game_data.items()) and (key in game_data.items()):
-    for key, value in game_data.items():
-        key_data = key
-        value_data = value
-        print(key_data, value_data)
-
-    for key in game_data.items():
-        key_data = key
-        for key_data_singl in key_data:
-            if key_data_singl == value_date
-
-
-
-
-
-        print(type(key))
-        for data_key in key:
-            print(data_key)
-            if data_key == game_data.get(key)
-
-        for key_data in key:
-
-
-
-            if key_data == value:
-                q = Bill.objects.filter(bill_fio=value)
-                print(q)
-
-
 
 
 
@@ -250,4 +197,4 @@ def porjadok():
     nov_por_2 = (nov_por[a:])
     count_nov_por_2 = nov_por_2.count()
 
-'''
+
