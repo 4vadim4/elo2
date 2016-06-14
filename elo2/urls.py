@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^index/$', 'result.views.index', name='xindex'),
     url(r'^index/elo/$', 'result.views.elo', name='xelo'),
     url(r'^index/swiss/$', 'result.views.swiss', name='xswiss'),
+    url(r'^index/swiss/first_step/$', 'result.views.first_step', name='first_step'),
 
     url(r'^index/add_res/', 'result.views.add_res', name='add_res'),
     url(r'^auth/', include('login.urls')),
