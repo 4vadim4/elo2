@@ -1,4 +1,5 @@
 from django.shortcuts import render, render_to_response, redirect
+from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from .models import Bill
 from .forms import AddData
@@ -156,7 +157,7 @@ def swiss(request):
     args['res_1'] = res_1
     args['res_2'] = res_2
     args['players'] = players
-    print(type(players))
+
 
     return render_to_response('swiss.html', args)
 
@@ -168,14 +169,13 @@ def first_step(request):
         print(key, ' ', value)
         if key == 'csrfmiddlewaretoken':
             print('csrfmiddlewaretoken')
+
         elif value == 'no':
+            split_player = key.split(', ')
+            for player in split_player:
+                player_name = re.sub(r'[^\w\s-]+', r'', player).strip()
 
-            a = key.split(', ')
-            for aa in a:
-                player_name = re.sub(r'[^\w\s-]+|[\d]+', r'', aa).strip()
-                print(player_name)
                 standoff = Bill.objects.get(bill_fio = player_name)
-
                 standoff.swiss_bill_score = standoff.swiss_bill_score + 0.5
                 standoff.save()
 
@@ -184,7 +184,18 @@ def first_step(request):
             bill.swiss_bill_score = bill.swiss_bill_score + 1
             bill.save()
 
+    swiss_players = Bill.objects.all().order_by('-swiss_bill_score')
+    new_game = swiss_players.count() // 2
+    new_group_1 = (swiss_players[:new_game])
+    new_group_2 = (swiss_players[new_game:])
 
+    result_1 = [(new_group_1[n].bill_fio) for n in range(new_group_1.count()) if new_group_1[n] in new_group_1]
+    result_2 = [(new_group_2[n].bill_fio) for n in range(new_group_2.count()) if new_group_2[n] in new_group_2]
+    players = zip_longest(result_1, result_2)
+
+
+    return render_to_response('swiss_result.html', {'swiss_players':swiss_players,
+                                                    'players':players}, context_instance=RequestContext(request))
 
 
 

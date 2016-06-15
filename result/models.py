@@ -14,7 +14,7 @@ class Bill(models.Model):
     bill_elo = models.IntegerField(blank=True, null=True, verbose_name='Показатель ЭЛО')
     bill_koef = models.IntegerField(blank=True, null=True, verbose_name='Коэфициент')
     bill_mat_ozh = models.IntegerField(blank=True, null=True, verbose_name='Мат. ожидание кол. очков')
-    swiss_bill_score = models.IntegerField(default=0, verbose_name='Кол-во очков по швец. системе')
+    swiss_bill_score = models.FloatField(default=0, verbose_name='Кол-во очков по швец. системе')
 
     def __str__(self):
         return self.bill_fio
