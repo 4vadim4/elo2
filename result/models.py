@@ -11,7 +11,7 @@ class Bill(models.Model):
 
     bill_fio = models.CharField(max_length=50, verbose_name='ФИО')
     bill_kol_igr = models.IntegerField(blank=True, null=True, verbose_name='Сыгранных игр')
-    bill_elo = models.IntegerField(blank=True, null=True, verbose_name='Показатель ЭЛО')
+    bill_elo = models.FloatField(blank=True, null=True, verbose_name='Показатель ЭЛО')
     bill_koef = models.IntegerField(blank=True, null=True, verbose_name='Коэфициент')
     bill_mat_ozh = models.IntegerField(blank=True, null=True, verbose_name='Мат. ожидание кол. очков')
     swiss_bill_score = models.FloatField(default=0, verbose_name='Кол-во очков по швец. системе')

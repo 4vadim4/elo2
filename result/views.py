@@ -65,27 +65,34 @@ def elo(request):
 
 def add_res(request):
 
+
     if request.method == 'POST':
         form2 = request.POST
+
+
         y4astnik1 = form2['select1']
-        resultat1 = form2['option1']
-        if resultat1 == 'a1':
+
+
+        resultat1 = form2['player1']
+
+
+        if resultat1 == 'win':
             res_igri1 = 1
-        elif resultat1 == 'a2':
+        elif resultat1 == 'standoff':
             res_igri1 = 0.5
-        elif resultat1 == 'a3':
+        elif resultat1 == 'loss':
             res_igri1 = 0
         y4astnik2 = form2['select2']
-        resultat2 = form2['option2']
-        if resultat2 == 'b1':
+        resultat2 = form2['player2']
+        if resultat2 == 'win':
             res_igri2 = 1
-        elif resultat2 == 'b2':
+        elif resultat2 == 'standoff':
             res_igri2 = 0.5
-        elif resultat2 == 'b3':
+        elif resultat2 == 'loss':
             res_igri2 = 0
 
 
-        EA = 1 / (1 + 10 ** ((Bill.objects.get(bill_fio=y4astnik2).bill_elo - Bill.objects.get(bill_fio=y4astnik1).bill_elo) / 400))
+        Expect_A = 1 / (1 + 10 ** ((Bill.objects.get(bill_fio=y4astnik2).bill_elo - Bill.objects.get(bill_fio=y4astnik1).bill_elo) / 400))
 
         if Bill.objects.get(bill_fio=y4astnik1).bill_kol_igr > 30 and Bill.objects.get(bill_fio=y4astnik1).bill_elo >= 2400:
             K = 10
@@ -94,13 +101,25 @@ def add_res(request):
         elif Bill.objects.get(bill_fio=y4astnik1).bill_kol_igr <= 30:
             K = 40
 
-        RAnew = round(Bill.objects.get(bill_fio=y4astnik1).bill_elo + K * (res_igri1 - EA), 2)
-        new_RAnew = Bill.objects.get(bill_fio=y4astnik1)
-        print(new_RAnew)
-        new_RAnew.bill_elo = RAnew
-        new_RAnew.save()
+#        print(Bill.objects.get(bill_fio=y4astnik1), '  ', K, '  ', res_igri1)
 
-        EB = 1 / (1 + 10 ** ((Bill.objects.get(bill_fio=y4astnik1).bill_elo - Bill.objects.get(bill_fio=y4astnik2).bill_elo) / 400))
+
+
+        Rating_A_new = round(Bill.objects.get(bill_fio=y4astnik1).bill_elo + K * (res_igri1 - Expect_A), 1)
+#        print(Rating_A_new)
+
+        rating_A = Bill.objects.get(bill_fio=y4astnik1)
+#        print(type(rating_A))
+#        print(rating_A)
+
+        rating_A.bill_elo = 300
+#        print(type(rating_A))
+
+        rating_A.save()
+
+#        print(Bill.objects.filter(bill_fio=y4astnik1))
+
+        Expect_B = 1 / (1 + 10 ** ((Bill.objects.get(bill_fio=y4astnik1).bill_elo - Bill.objects.get(bill_fio=y4astnik2).bill_elo) / 400))
 
         if Bill.objects.get(bill_fio=y4astnik2).bill_kol_igr > 30 and Bill.objects.get(bill_fio=y4astnik2).bill_elo >= 2400:
             K = 10
@@ -109,25 +128,21 @@ def add_res(request):
         elif Bill.objects.get(bill_fio=y4astnik2).bill_kol_igr <= 30:
             K = 40
 
-        RBnew = round(Bill.objects.get(bill_fio=y4astnik2).bill_elo + K * (res_igri2 - EB), 2)
-        new_RBnew = Bill.objects.get(bill_fio=y4astnik2)
-        new_RBnew.bill_elo = RBnew
-        new_RBnew.save()
+        Rating_B_new = round(Bill.objects.get(bill_fio=y4astnik2).bill_elo + K * (res_igri2 - Expect_B), 1)
+        rating_B = Bill.objects.get(bill_fio=y4astnik2)
+        rating_B.bill_elo = Rating_B_new
+        rating_B.save()
 
 
-
-
-        print(EA, RAnew)
-        print(EB, RBnew)
-#        return render_to_response('result2.html')
 
     arg = {}
     arg.update(csrf(request))
     arg['elo_data'] = Bill.objects.all()
-    arg['username'] = auth.get_user().username
+#    arg['username'] = auth.get_user().username
 
-    return render_to_response('result2.html', arg)
-
+    return render_to_response('result2.html', arg, context_instance=RequestContext(request))
+'''
+'''
 
 def swiss(request):
     add_data = AddData

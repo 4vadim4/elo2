@@ -12,7 +12,7 @@
     </table>
 <br><br>
 
-</div>>
+</div>
 
 </senter><table style="width: 400px; margin: auto">
 <form action="{% url 'add_res' %}" method="post">{% csrf_token %}
@@ -30,7 +30,8 @@
         {% endfor %}
           </select>
       </td>
-      <td align="center"><select name="select2">
+      <td align="center">
+          <select name="select2">
           <option selected="selected">Выберите игрока</option>
         {% for value3 in elo_data %}
         <option>{{ value3.bill_fio }}</option>
@@ -41,14 +42,14 @@
 
     <tr valign="top">
       <td class="">
-        <input type="radio" name="option1" value="a1">Победа<Br>
-        <input type="radio" name="option1" value="a2">Поражение<Br>
-        <input type="radio" name="option1" value="a3">Ничья<Br>
+        <input type="radio" name="player1" value="win">Победа<Br>
+        <input type="radio" name="player1" value="loss">Поражение<Br>
+        <input type="radio" name="player1" value="standoff">Ничья<Br>
       </td>
       <td class="">
-        <input type="radio" name="option2" value="b1">Победа<Br>
-        <input type="radio" name="option2" value="b2">Поражение<Br>
-        <input type="radio" name="option2" value="b3">Ничья<Br>
+        <input type="radio" name="player2" value="win">Победа<Br>
+        <input type="radio" name="player2" value="loss">Поражение<Br>
+        <input type="radio" name="player2" value="standoff">Ничья<Br>
       </td>
     </tr>
     <tr>
