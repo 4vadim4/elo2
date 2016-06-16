@@ -166,12 +166,24 @@ def swiss(request):
     res_2 = [(nov_por_2[n].bill_fio) for n in range(nov_por_2.count()) if nov_por_2[n] in nov_por_2]
     players = zip_longest(res_1, res_2)
 
+    for rw_player in players:
+        spisok = []
+        for one_rw_player in rw_player:
+            if one_rw_player == None:
+                pass
+            else:
 
-#, fillvalue='-'
+                rw_player_name = re.sub(r'[^\w\s-]+', r'', one_rw_player).strip()
+                rw_player_id = Bill.objects.get(bill_fio = rw_player_name).id
+                spisok.append(rw_player_id)
+        print(spisok)
+
+
 
     args['res_1'] = res_1
     args['res_2'] = res_2
     args['players'] = players
+
 
 
     return render_to_response('swiss.html', args)
