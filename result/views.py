@@ -1,7 +1,7 @@
 from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
-from .models import Bill
+from .models import Bill, Couples_List
 from .forms import AddData
 from django.core.context_processors import csrf
 from django.contrib import auth
@@ -141,8 +141,7 @@ def add_res(request):
 #    arg['username'] = auth.get_user().username
 
     return render_to_response('result2.html', arg, context_instance=RequestContext(request))
-'''
-'''
+
 
 def swiss(request):
     add_data = AddData
@@ -176,7 +175,19 @@ def swiss(request):
                 rw_player_name = re.sub(r'[^\w\s-]+', r'', one_rw_player).strip()
                 rw_player_id = Bill.objects.get(bill_fio = rw_player_name).id
                 spisok.append(rw_player_id)
+                spisok.sort()
         print(spisok)
+        length = len(spisok)
+
+        if length == 2:
+            rival_1 = Bill.objects.get(id = spisok[0])
+            rival_2 = Bill.objects.get(id = spisok[1])
+            rival_1.swiss_rivel = spisok[1]
+            rival_2.swiss_rivel = spisok[0]
+            rival_1.save()
+            rival_2.save()
+        else:
+            pass
 
 
 
@@ -216,15 +227,82 @@ def first_step(request):
     new_group_1 = (swiss_players[:new_game])
     new_group_2 = (swiss_players[new_game:])
 
+    id_new_group_1 = []
+    id_new_group_2 = []
+
+    for n1 in new_group_1:
+        igrok = Bill.objects.get(bill_fio = n1)
+        id_igrok = igrok.id
+        id_new_group_1.append(id_igrok)
+
+    for n2 in new_group_2:
+        igrok = Bill.objects.get(bill_fio = n2)
+        id_igrok = igrok.id
+        id_new_group_2.append(id_igrok)
+
+    for single_id in id_new_group_1:
+        result = [single_id, random.choice(id_new_group_2)]
+#        print(result, 'начальный')
+#        print('игрок - ', result[0], 'уже играл с ', Bill.objects.get(id=result[0]).swiss_rivel,  'сейчас играет с ', result[1])
+
+        if Bill.objects.get(id=result[0]).swiss_rivel is not None:
+            while str(result[1]) in Bill.objects.get(id=result[0]).swiss_rivel:
+                result = [single_id, random.choice(id_new_group_2)]
+                break
+        else:
+            result = [single_id, random.choice(id_new_group_2)]
+
+
+#        while Bill.objects.get(id=result[0]).swiss_rivel is not None and str(result[1]) in Bill.objects.get(id=result[0]).swiss_rivel:
+#                result = [single_id, random.choice(id_new_group_2)]
+#                break
+
+
+#        if (str(result[1])) in Bill.objects.get(id=result[0]).swiss_rivel:
+#            print('True')
+#        else:
+#            print('False')
+#            while (str(result[1]) + ',') in Bill.objects.get(id=result[0]).swiss_rivel:
+ #               result = [single_id, random.choice(id_new_group_2)]
+
+#        while ' result[1],' in Bill.objects.get(id=result[0]).swiss_rivel:
+#            result = [k, random.choice(id_new_group_2)]
+#            print(result, 'пробный')
+        id_new_group_2.remove(result[1])
+        print(result, 'конечный')
+    print(id_new_group_2)
+
+#    print(id_new_group_1)
+#    print(id_new_group_2)
+
+#    print(random.choice(id_new_group_1))
+
+
+
+#    print(new_group_2)
+'''
     result_1 = [(new_group_1[n].bill_fio) for n in range(new_group_1.count()) if new_group_1[n] in new_group_1]
     result_2 = [(new_group_2[n].bill_fio) for n in range(new_group_2.count()) if new_group_2[n] in new_group_2]
     players = zip_longest(result_1, result_2)
 
 
+
+    for pl in players:
+        if None not in pl:
+            w_pl = []
+            for p in pl:
+
+                igrok = Bill.objects.get(bill_fio = p)
+                id_igrok = igrok.id
+
+                print(p, ' - это вывод !')
+
+
+
     return render_to_response('swiss_result.html', {'swiss_players':swiss_players,
                                                     'players':players}, context_instance=RequestContext(request))
 
-
+'''
 
 def porjadok():
 
