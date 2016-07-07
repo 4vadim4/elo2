@@ -31,21 +31,12 @@ def index(request):
             elo2 = elo + 10
             import pdb; pdb.set_trace()
             bill = Bill.objects.create(bill_fio=fio, bill_elo=elo, bill_koef=koe, bill_mat_ozh=elo2)
-
-#            import pdb; pdb.set_trace()
             bill.save()
 
             return redirect('index/')
 
     else:
-#        add_data = AddData
-#        args = {}
-#        args.update(csrf(request))
-#        args['index'] = Bill.objects.all()
-#        args['form'] = add_data
-#        args['username'] = auth.get_user().username
 
-#        return render_to_response('result.html', args)
          pass
 
     add_data = AddData
@@ -69,12 +60,9 @@ def add_res(request):
     if request.method == 'POST':
         form2 = request.POST
 
-
         y4astnik1 = form2['select1']
 
-
         resultat1 = form2['player1']
-
 
         if resultat1 == 'win':
             res_igri1 = 1
@@ -101,23 +89,12 @@ def add_res(request):
         elif Bill.objects.get(bill_fio=y4astnik1).bill_kol_igr <= 30:
             K = 40
 
-#        print(Bill.objects.get(bill_fio=y4astnik1), '  ', K, '  ', res_igri1)
-
-
 
         Rating_A_new = round(Bill.objects.get(bill_fio=y4astnik1).bill_elo + K * (res_igri1 - Expect_A), 1)
-#        print(Rating_A_new)
-
         rating_A = Bill.objects.get(bill_fio=y4astnik1)
-#        print(type(rating_A))
-#        print(rating_A)
-
-        rating_A.bill_elo = 300
-#        print(type(rating_A))
-
+        rating_A.bill_elo = Rating_A_new
         rating_A.save()
 
-#        print(Bill.objects.filter(bill_fio=y4astnik1))
 
         Expect_B = 1 / (1 + 10 ** ((Bill.objects.get(bill_fio=y4astnik1).bill_elo - Bill.objects.get(bill_fio=y4astnik2).bill_elo) / 400))
 
@@ -144,18 +121,12 @@ def add_res(request):
 
 
 def swiss(request):
-    add_data = AddData
     args = {}
     args.update(csrf(request))
     args['index'] = Bill.objects.all()
-
- #   args['swiss_data'] = Swiss_Bill.objects.all()
-#    args['form'] = add_data
     args['username'] = auth.get_user(request).username
 
-
     nov_por = Bill.objects.filter().order_by('-bill_mat_ozh')
-
 
     a = nov_por.count() // 2
     nov_por_1 = (nov_por[:a])
@@ -165,13 +136,16 @@ def swiss(request):
     res_2 = [(nov_por_2[n].bill_fio) for n in range(nov_por_2.count()) if nov_por_2[n] in nov_por_2]
     players = zip_longest(res_1, res_2)
 
+#    players_for_page = players
+
+    args['players'] = players
+
     for rw_player in players:
         spisok = []
         for one_rw_player in rw_player:
             if one_rw_player == None:
                 pass
             else:
-
                 rw_player_name = re.sub(r'[^\w\s-]+', r'', one_rw_player).strip()
                 rw_player_id = Bill.objects.get(bill_fio = rw_player_name).id
                 spisok.append(rw_player_id)
@@ -189,11 +163,6 @@ def swiss(request):
         else:
             pass
 
-
-
-    args['res_1'] = res_1
-    args['res_2'] = res_2
-    args['players'] = players
 
 
 
@@ -240,10 +209,11 @@ def first_step(request):
         id_igrok = igrok.id
         id_new_group_2.append(id_igrok)
 
+
+    result_finish = []
+
     for single_id in id_new_group_1:
         result = [single_id, random.choice(id_new_group_2)]
-#        print(result, 'начальный')
-#        print('игрок - ', result[0], 'уже играл с ', Bill.objects.get(id=result[0]).swiss_rivel,  'сейчас играет с ', result[1])
 
         if Bill.objects.get(id=result[0]).swiss_rivel is not None:
             while str(result[1]) in Bill.objects.get(id=result[0]).swiss_rivel:
@@ -252,34 +222,17 @@ def first_step(request):
         else:
             result = [single_id, random.choice(id_new_group_2)]
 
-
-#        while Bill.objects.get(id=result[0]).swiss_rivel is not None and str(result[1]) in Bill.objects.get(id=result[0]).swiss_rivel:
-#                result = [single_id, random.choice(id_new_group_2)]
-#                break
-
-
-#        if (str(result[1])) in Bill.objects.get(id=result[0]).swiss_rivel:
-#            print('True')
-#        else:
-#            print('False')
-#            while (str(result[1]) + ',') in Bill.objects.get(id=result[0]).swiss_rivel:
- #               result = [single_id, random.choice(id_new_group_2)]
-
-#        while ' result[1],' in Bill.objects.get(id=result[0]).swiss_rivel:
-#            result = [k, random.choice(id_new_group_2)]
-#            print(result, 'пробный')
         id_new_group_2.remove(result[1])
         print(result, 'конечный')
+        result_finish.append(result)
     print(id_new_group_2)
+    print(result_finish)
 
-#    print(id_new_group_1)
-#    print(id_new_group_2)
-
-#    print(random.choice(id_new_group_1))
-
+    return render_to_response('swiss_result.html', {'swiss_players':swiss_players},
+                              context_instance=RequestContext(request))
 
 
-#    print(new_group_2)
+
 '''
     result_1 = [(new_group_1[n].bill_fio) for n in range(new_group_1.count()) if new_group_1[n] in new_group_1]
     result_2 = [(new_group_2[n].bill_fio) for n in range(new_group_2.count()) if new_group_2[n] in new_group_2]
@@ -298,19 +251,16 @@ def first_step(request):
                 print(p, ' - это вывод !')
 
 
-
-    return render_to_response('swiss_result.html', {'swiss_players':swiss_players,
-                                                    'players':players}, context_instance=RequestContext(request))
-
 '''
 
-def porjadok():
 
-    nov_por = Bill.objects.filter().order_by('bill_elo')
 
-    a = nov_por.count() // 2
-    nov_por_1 = (nov_por[:a])
-    nov_por_2 = (nov_por[a:])
-    count_nov_por_2 = nov_por_2.count()
+
+
+
+
+
+
+
 
 
