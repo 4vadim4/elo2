@@ -123,6 +123,7 @@ def add_res(request):
 def swiss(request):
     args = {}
     args.update(csrf(request))
+    index = Bill.objects.all()
     args['index'] = Bill.objects.all()
     args['username'] = auth.get_user(request).username
 
@@ -135,12 +136,11 @@ def swiss(request):
     res_1 = [(nov_por_1[n].bill_fio) for n in range(nov_por_1.count()) if nov_por_1[n] in nov_por_1]
     res_2 = [(nov_por_2[n].bill_fio) for n in range(nov_por_2.count()) if nov_por_2[n] in nov_por_2]
     players = zip_longest(res_1, res_2)
+    n_players = zip_longest(res_1, res_2)
 
-#    players_for_page = players
 
-    args['players'] = players
 
-    for rw_player in players:
+    for rw_player in n_players:
         spisok = []
         for one_rw_player in rw_player:
             if one_rw_player == None:
@@ -150,9 +150,9 @@ def swiss(request):
                 rw_player_id = Bill.objects.get(bill_fio = rw_player_name).id
                 spisok.append(rw_player_id)
                 spisok.sort()
+
         print(spisok)
         length = len(spisok)
-
         if length == 2:
             rival_1 = Bill.objects.get(id = spisok[0])
             rival_2 = Bill.objects.get(id = spisok[1])
@@ -165,15 +165,15 @@ def swiss(request):
 
 
 
+    return render_to_response('swiss.html', {'players':players, 'index':index},
+                              context_instance=RequestContext(request))
 
-    return render_to_response('swiss.html', args)
 
 
- #   import pdb; pdb.set_trace()
 def first_step(request):
     game_data = request.POST
     for key, value in game_data.items():
-        print(key, ' ', value)
+#        print(key, ' ', value)
         if key == 'csrfmiddlewaretoken':
             print('csrfmiddlewaretoken')
 
@@ -223,35 +223,18 @@ def first_step(request):
             result = [single_id, random.choice(id_new_group_2)]
 
         id_new_group_2.remove(result[1])
-        print(result, 'конечный')
-        result_finish.append(result)
-    print(id_new_group_2)
-    print(result_finish)
+        result_2 = [Bill.objects.get(id=result[0]), Bill.objects.get(id=result[1])]
+        result_finish.append(result_2)
 
-    return render_to_response('swiss_result.html', {'swiss_players':swiss_players},
+    if id_new_group_2 != None:
+        end_player = [None, Bill.objects.get(id=id_new_group_2[0])]
+        result_finish.append(end_player)
+        print(end_player)
+
+    return render_to_response('swiss_result.html', {'swiss_players':swiss_players, 'result_finish':result_finish},
                               context_instance=RequestContext(request))
 
 
-
-'''
-    result_1 = [(new_group_1[n].bill_fio) for n in range(new_group_1.count()) if new_group_1[n] in new_group_1]
-    result_2 = [(new_group_2[n].bill_fio) for n in range(new_group_2.count()) if new_group_2[n] in new_group_2]
-    players = zip_longest(result_1, result_2)
-
-
-
-    for pl in players:
-        if None not in pl:
-            w_pl = []
-            for p in pl:
-
-                igrok = Bill.objects.get(bill_fio = p)
-                id_igrok = igrok.id
-
-                print(p, ' - это вывод !')
-
-
-'''
 
 
 
