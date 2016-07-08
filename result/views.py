@@ -138,8 +138,9 @@ def swiss(request):
     players = zip_longest(res_1, res_2)
     n_players = zip_longest(res_1, res_2)
 
-
-
+    return render_to_response('swiss.html', {'players':players, 'index':index},
+                              context_instance=RequestContext(request))
+"""
     for rw_player in n_players:
         spisok = []
         for one_rw_player in rw_player:
@@ -167,21 +168,24 @@ def swiss(request):
 
     return render_to_response('swiss.html', {'players':players, 'index':index},
                               context_instance=RequestContext(request))
-
+"""
 
 
 def first_step(request):
     game_data = request.POST
+    print(game_data)
     for key, value in game_data.items():
 #        print(key, ' ', value)
         if key == 'csrfmiddlewaretoken':
-            print('csrfmiddlewaretoken')
+#            print('csrfmiddlewaretoken')
+            pass
 
         elif value == 'no':
             split_player = key.split(', ')
+#            print(split_player)
             for player in split_player:
                 player_name = re.sub(r'[^\w\s-]+', r'', player).strip()
-
+#                print(player_name)
                 standoff = Bill.objects.get(bill_fio = player_name)
                 standoff.swiss_bill_score = standoff.swiss_bill_score + 0.5
                 standoff.save()
@@ -190,6 +194,36 @@ def first_step(request):
             bill = Bill.objects.get(bill_fio = value)
             bill.swiss_bill_score = bill.swiss_bill_score + 1
             bill.save()
+
+    for key, value in game_data.items():
+        if key == 'csrfmiddlewaretoken':
+            pass
+        else:
+            spisok = []
+            if 'None' in key:
+                pass
+            else:
+                wr_split_player = key.split(', ')
+                for rw_player in wr_split_player:
+                    rw_player_name = re.sub(r'[^\w\s-]+', r'', rw_player).strip()
+#                    print(rw_player_name)
+                    rw_player_id = Bill.objects.get(bill_fio = rw_player_name).id
+                    spisok.append(rw_player_id)
+                    spisok.sort()
+
+#                print(spisok)
+                length = len(spisok)
+                if length == 2:
+                    rival_1 = Bill.objects.get(id = spisok[0])
+                    rival_2 = Bill.objects.get(id = spisok[1])
+                    rival_1.swiss_rivel = spisok[1]
+                    rival_2.swiss_rivel = spisok[0]
+                    rival_1.save()
+                    rival_2.save()
+                else:
+                    pass
+
+
 
     swiss_players = Bill.objects.all().order_by('-swiss_bill_score')
     new_game = swiss_players.count() // 2
@@ -224,13 +258,14 @@ def first_step(request):
 
         id_new_group_2.remove(result[1])
         result_2 = [Bill.objects.get(id=result[0]), Bill.objects.get(id=result[1])]
+        print(result_2)
         result_finish.append(result_2)
 
     if id_new_group_2 != None:
         end_player = [None, Bill.objects.get(id=id_new_group_2[0])]
         result_finish.append(end_player)
-        print(end_player)
-
+#        print(end_player)
+#    print(result_finish)
     return render_to_response('swiss_result.html', {'swiss_players':swiss_players, 'result_finish':result_finish},
                               context_instance=RequestContext(request))
 
