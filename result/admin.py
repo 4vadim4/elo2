@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Bill
+from .models import Bill, Couples_List
 
 admin.site.register(Bill)
-#admin.site.register(Swiss_Bill)
+admin.site.register(Couples_List)
 

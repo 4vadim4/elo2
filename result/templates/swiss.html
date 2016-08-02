@@ -2,7 +2,7 @@
 
 {% block swiss %}
 
-    <div class="large-offset-3">
+<div class="large-offset-3">
     <br><br>
     <table border="1">
         {% for value in index %}
@@ -11,10 +11,10 @@
     </table>
     <br><br>
 
-    </div>
+</div>
 
 
-    <div class="large-offset-3">
+<div class="large-offset-3">
     <br><br>
     <table border="1">
         {% for swiss_value in index %}
@@ -23,11 +23,16 @@
     </table>
 
     <br><br>
+    <br>
+
+
+
+
 
 <form action="{% url 'first_step' %}" method="post">
 {% csrf_token %}
     <table border="1">
-        {% for opponents_player in players %}
+        {% for opponents_player in res_couple %}
             {% if None not in opponents_player %}
                 <tr>
                     <td>
@@ -54,7 +59,7 @@
                     <td>
                         {% for single_player in opponents_player %}
                             {% if single_player != None %}
-                            <input type="radio" name="{{ opponents_player }}" value="{{ single_player }}" checked>{{ single_player }} <br>
+                            <input type="radio" name="{{ opponents_player }}" value="{{ single_player }}" checked>{{ single_player}} <br>
                             {% endif %}
                         {% endfor %}
                     </td>
@@ -67,7 +72,11 @@
 </form>
     <br><br>
 
-    </div>
+
+
+
+
+</div>
 
 
 {% endblock %}

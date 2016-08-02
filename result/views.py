@@ -136,56 +136,29 @@ def swiss(request):
     res_1 = [(nov_por_1[n].bill_fio) for n in range(nov_por_1.count()) if nov_por_1[n] in nov_por_1]
     res_2 = [(nov_por_2[n].bill_fio) for n in range(nov_por_2.count()) if nov_por_2[n] in nov_por_2]
     players = zip_longest(res_1, res_2)
-    n_players = zip_longest(res_1, res_2)
 
-    return render_to_response('swiss.html', {'players':players, 'index':index},
+    res_couple = []
+    for couple in players:
+        res_couple.append(couple)
+
+
+
+    return render_to_response('swiss.html', {'players':players, 'index':index, 'res_couple':res_couple},
                               context_instance=RequestContext(request))
-"""
-    for rw_player in n_players:
-        spisok = []
-        for one_rw_player in rw_player:
-            if one_rw_player == None:
-                pass
-            else:
-                rw_player_name = re.sub(r'[^\w\s-]+', r'', one_rw_player).strip()
-                rw_player_id = Bill.objects.get(bill_fio = rw_player_name).id
-                spisok.append(rw_player_id)
-                spisok.sort()
 
-        print(spisok)
-        length = len(spisok)
-        if length == 2:
-            rival_1 = Bill.objects.get(id = spisok[0])
-            rival_2 = Bill.objects.get(id = spisok[1])
-            rival_1.swiss_rivel = spisok[1]
-            rival_2.swiss_rivel = spisok[0]
-            rival_1.save()
-            rival_2.save()
-        else:
-            pass
-
-
-
-    return render_to_response('swiss.html', {'players':players, 'index':index},
-                              context_instance=RequestContext(request))
-"""
 
 
 def first_step(request):
     game_data = request.POST
-    print(game_data)
     for key, value in game_data.items():
-#        print(key, ' ', value)
         if key == 'csrfmiddlewaretoken':
-#            print('csrfmiddlewaretoken')
             pass
 
         elif value == 'no':
             split_player = key.split(', ')
-#            print(split_player)
+
             for player in split_player:
                 player_name = re.sub(r'[^\w\s-]+', r'', player).strip()
-#                print(player_name)
                 standoff = Bill.objects.get(bill_fio = player_name)
                 standoff.swiss_bill_score = standoff.swiss_bill_score + 0.5
                 standoff.save()
@@ -206,20 +179,33 @@ def first_step(request):
                 wr_split_player = key.split(', ')
                 for rw_player in wr_split_player:
                     rw_player_name = re.sub(r'[^\w\s-]+', r'', rw_player).strip()
-#                    print(rw_player_name)
                     rw_player_id = Bill.objects.get(bill_fio = rw_player_name).id
                     spisok.append(rw_player_id)
                     spisok.sort()
 
-#                print(spisok)
                 length = len(spisok)
+                rival_1 = Bill.objects.get(id = spisok[0]).swiss_rivel
+                rival_2 = Bill.objects.get(id = spisok[1]).swiss_rivel
+
                 if length == 2:
-                    rival_1 = Bill.objects.get(id = spisok[0])
-                    rival_2 = Bill.objects.get(id = spisok[1])
-                    rival_1.swiss_rivel = spisok[1]
-                    rival_2.swiss_rivel = spisok[0]
-                    rival_1.save()
-                    rival_2.save()
+                    if len(rival_1) == 0:
+                        rival_1 = Bill.objects.get(id = spisok[0])
+                        rival_1.swiss_rivel = spisok[1]
+                        rival_1.save()
+                    else:
+                        rival_1 = Bill.objects.get(id = spisok[0])
+                        rival_1.swiss_rivel = str(rival_1.swiss_rivel) + ', ' + str(spisok[1])
+                        rival_1.save()
+
+                    if len(rival_2) == 0:
+                        rival_2 = Bill.objects.get(id = spisok[1])
+                        rival_2.swiss_rivel = spisok[0]
+                        rival_2.save()
+                    else:
+                        rival_2 = Bill.objects.get(id = spisok[1])
+                        rival_2.swiss_rivel = str(rival_1.swiss_rivel) + ', ' + str(spisok[0])
+                        rival_2.save()
+
                 else:
                     pass
 
@@ -243,10 +229,32 @@ def first_step(request):
         id_igrok = igrok.id
         id_new_group_2.append(id_igrok)
 
-
     result_finish = []
 
     for single_id in id_new_group_1:
+        rival_data_1 = Bill.objects.get(id=single_id).swiss_rivel
+        rival_data_1 = re.split(r' ,', rival_data_1)
+        tmp_id_new_group_2 = id_new_group_2
+        try:
+            for i in rival_data_1:
+                tmp_id_new_group_2.remove(i)
+        except ValueError:
+            pass
+        result = [single_id, random.choice(tmp_id_new_group_2)]
+        id_new_group_2.remove(result[1])
+
+        result_2 = [str(Bill.objects.get(id=result[0])), str(Bill.objects.get(id=result[1]))]
+        result_finish.append(result_2)
+
+    if id_new_group_2 != None:
+        end_player = [None, str(Bill.objects.get(id=id_new_group_2[0]))]
+        result_finish.append(end_player)
+
+
+    return render_to_response('swiss_result.html', {'swiss_players':swiss_players, 'result_finish':result_finish},
+                              context_instance=RequestContext(request))
+
+'''
         result = [single_id, random.choice(id_new_group_2)]
 
         if Bill.objects.get(id=result[0]).swiss_rivel is not None:
@@ -257,28 +265,18 @@ def first_step(request):
             result = [single_id, random.choice(id_new_group_2)]
 
         id_new_group_2.remove(result[1])
-        result_2 = [Bill.objects.get(id=result[0]), Bill.objects.get(id=result[1])]
-        print(result_2)
+        result_2 = [str(Bill.objects.get(id=result[0])), str(Bill.objects.get(id=result[1]))]
         result_finish.append(result_2)
 
     if id_new_group_2 != None:
-        end_player = [None, Bill.objects.get(id=id_new_group_2[0])]
+        end_player = [None, str(Bill.objects.get(id=id_new_group_2[0]))]
         result_finish.append(end_player)
-#        print(end_player)
-#    print(result_finish)
+
     return render_to_response('swiss_result.html', {'swiss_players':swiss_players, 'result_finish':result_finish},
                               context_instance=RequestContext(request))
 
 
-
-
-
-
-
-
-
-
-
+'''
 
 
 
