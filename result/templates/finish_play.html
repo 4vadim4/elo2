@@ -1,0 +1,32 @@
+{% extends 'index.html' %}
+
+{% block finish_play %}
+
+    <h2>Игроки разыграли разыграли все возможне варианты между собой.</h2>
+    <br><br>
+    <h2>Итоги игр:</h2>
+
+    <div class="large-offset-3">
+    <br><br>
+    <table border="1">
+        {% for player in swiss_players %}
+        <tr><td>{{ player.bill_fio }}</td><td>{{ player.swiss_bill_score }}</td></tr>
+        {% endfor %}
+    </table>
+
+    <br><br>
+
+    <div class="large-offset-3">
+    <br><br>
+    <table border="1">
+        {% for value in swiss_players %}
+        <tr><td>{{ value.bill_fio }}</td><td>{{ value.bill_elo }}</td><td>{{ value.bill_koef }}</td><td>{{ value.bill_mat_ozh }}</td></tr>
+        {% endfor %}
+    </table>
+    <br><br>
+
+</div>
+
+
+
+{% endblock %}

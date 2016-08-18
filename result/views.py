@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 import random
 from itertools import zip_longest
 import re
+import copy
 
 def welcome(request):
         return render_to_response('welcome.html')
@@ -127,7 +128,7 @@ def swiss(request):
     args['index'] = Bill.objects.all()
     args['username'] = auth.get_user(request).username
 
-    nov_por = Bill.objects.filter().order_by('-bill_mat_ozh')
+    nov_por = Bill.objects.filter().order_by('-swiss_bill_score')
 
     a = nov_por.count() // 2
     nov_por_1 = (nov_por[:a])
@@ -143,12 +144,13 @@ def swiss(request):
 
 
 
-    return render_to_response('swiss.html', {'players':players, 'index':index, 'res_couple':res_couple},
+    return render_to_response('swiss.html', {'players':players, 'index':index, 'res_couple':res_couple, 'nov_por':nov_por},
                               context_instance=RequestContext(request))
 
 
 
 def first_step(request):
+#   select players from the dictionary and define points
     game_data = request.POST
     for key, value in game_data.items():
         if key == 'csrfmiddlewaretoken':
@@ -168,14 +170,17 @@ def first_step(request):
             bill.swiss_bill_score = bill.swiss_bill_score + 1
             bill.save()
 
+
     for key, value in game_data.items():
         if key == 'csrfmiddlewaretoken':
             pass
         else:
-            spisok = []
+
             if 'None' in key:
                 pass
             else:
+                # если найдена пара игроков
+                spisok = []
                 wr_split_player = key.split(', ')
                 for rw_player in wr_split_player:
                     rw_player_name = re.sub(r'[^\w\s-]+', r'', rw_player).strip()
@@ -183,31 +188,31 @@ def first_step(request):
                     spisok.append(rw_player_id)
                     spisok.sort()
 
-                length = len(spisok)
+
+                # записываем в переменную с кем игрок уже сыграл
                 rival_1 = Bill.objects.get(id = spisok[0]).swiss_rivel
+
+                if len(rival_1) == 0:
+                    rival_1 = Bill.objects.get(id = spisok[0])
+                    rival_1.swiss_rivel = spisok[1]
+                    rival_1.save()
+                else:
+                    rival_1 = Bill.objects.get(id = spisok[0])
+                    rival_1.swiss_rivel = str(rival_1.swiss_rivel) + ', ' + str(spisok[1])
+                    rival_1.save()
+
                 rival_2 = Bill.objects.get(id = spisok[1]).swiss_rivel
 
-                if length == 2:
-                    if len(rival_1) == 0:
-                        rival_1 = Bill.objects.get(id = spisok[0])
-                        rival_1.swiss_rivel = spisok[1]
-                        rival_1.save()
-                    else:
-                        rival_1 = Bill.objects.get(id = spisok[0])
-                        rival_1.swiss_rivel = str(rival_1.swiss_rivel) + ', ' + str(spisok[1])
-                        rival_1.save()
-
-                    if len(rival_2) == 0:
-                        rival_2 = Bill.objects.get(id = spisok[1])
-                        rival_2.swiss_rivel = spisok[0]
-                        rival_2.save()
-                    else:
-                        rival_2 = Bill.objects.get(id = spisok[1])
-                        rival_2.swiss_rivel = str(rival_1.swiss_rivel) + ', ' + str(spisok[0])
-                        rival_2.save()
-
+                if len(rival_2) == 0:
+                    rival_2 = Bill.objects.get(id = spisok[1])
+                    rival_2.swiss_rivel = spisok[0]
+                    rival_2.save()
                 else:
-                    pass
+                    rival_2 = Bill.objects.get(id = spisok[1])
+                    rival_2.swiss_rivel = str(rival_2.swiss_rivel) + ', ' + str(spisok[0])
+                    rival_2.save()
+
+
 
 
 
@@ -219,6 +224,7 @@ def first_step(request):
     id_new_group_1 = []
     id_new_group_2 = []
 
+    # формируем группу сильнейщих и слабейших, записываем их id
     for n1 in new_group_1:
         igrok = Bill.objects.get(bill_fio = n1)
         id_igrok = igrok.id
@@ -229,54 +235,64 @@ def first_step(request):
         id_igrok = igrok.id
         id_new_group_2.append(id_igrok)
 
+    # формируем след пару игроков, которые еще не играли друг с другом
+
     result_finish = []
+    tmp_players = []
 
     for single_id in id_new_group_1:
+        tmp_id_new_group_2 = copy.deepcopy(id_new_group_2)
+        tmp_rival = []
+
         rival_data_1 = Bill.objects.get(id=single_id).swiss_rivel
-        rival_data_1 = re.split(r' ,', rival_data_1)
-        tmp_id_new_group_2 = id_new_group_2
-        try:
-            for i in rival_data_1:
-                tmp_id_new_group_2.remove(i)
-        except ValueError:
-            pass
-        result = [single_id, random.choice(tmp_id_new_group_2)]
-        id_new_group_2.remove(result[1])
-
-        result_2 = [str(Bill.objects.get(id=result[0])), str(Bill.objects.get(id=result[1]))]
-        result_finish.append(result_2)
-
-    if id_new_group_2 != None:
-        end_player = [None, str(Bill.objects.get(id=id_new_group_2[0]))]
-        result_finish.append(end_player)
-
-
-    return render_to_response('swiss_result.html', {'swiss_players':swiss_players, 'result_finish':result_finish},
-                              context_instance=RequestContext(request))
-
-'''
-        result = [single_id, random.choice(id_new_group_2)]
-
-        if Bill.objects.get(id=result[0]).swiss_rivel is not None:
-            while str(result[1]) in Bill.objects.get(id=result[0]).swiss_rivel:
-                result = [single_id, random.choice(id_new_group_2)]
-                break
+        if not rival_data_1:
+            for j in tmp_players:
+                j = int(j)
+                if j not in tmp_id_new_group_2:
+                    continue
+                tmp_id_new_group_2.remove(j)
+            result = [single_id, random.choice(tmp_id_new_group_2)]
+            tmp_players.append(result[1])
+            result_2 = [str(Bill.objects.get(id=result[0])), str(Bill.objects.get(id=result[1]))]
+            result_finish.append(result_2)
         else:
-            result = [single_id, random.choice(id_new_group_2)]
+            rival_data_1 = re.split(r', ', rival_data_1)
+            for i in rival_data_1:
+                i = int(i)
+                tmp_rival.append(i)
+            tmp_rival.extend(tmp_players)
+            for j in tmp_rival:
+                j = int(j)
+                if j not in tmp_id_new_group_2:
+                    continue
+                tmp_id_new_group_2.remove(j)
 
-        id_new_group_2.remove(result[1])
-        result_2 = [str(Bill.objects.get(id=result[0])), str(Bill.objects.get(id=result[1]))]
-        result_finish.append(result_2)
+            if not tmp_id_new_group_2:
+                return render_to_response('finish_play.html', {'swiss_players':swiss_players, 'result_finish':result_finish},
+                              context_instance=RequestContext(request))
 
-    if id_new_group_2 != None:
+
+            result = [single_id, random.choice(tmp_id_new_group_2)]
+            tmp_players.append(result[1])
+            result_2 = [str(Bill.objects.get(id=result[0])), str(Bill.objects.get(id=result[1]))]
+            result_finish.append(result_2)
+
+    id_new_group_1.extend(tmp_players)
+
+    for one in id_new_group_1:
+        one = int(one)
+        if one not in id_new_group_2:
+            continue
+        id_new_group_2.remove(one)
+    if id_new_group_2:
         end_player = [None, str(Bill.objects.get(id=id_new_group_2[0]))]
         result_finish.append(end_player)
+
 
     return render_to_response('swiss_result.html', {'swiss_players':swiss_players, 'result_finish':result_finish},
                               context_instance=RequestContext(request))
 
 
-'''
 
 
 
