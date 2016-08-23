@@ -22,14 +22,3 @@ class Bill(models.Model):
 
 
 
-
-class Couples_List(models.Model):
-    class Meta:
-        db_table = "couples_list"
-        verbose_name = "Couples_list"
-        verbose_name_plural = "Couples_lists"
-
-    couples_list = models.CharField(max_length=1000, verbose_name='Couples list')
-
-    def __str__(self):
-        return self.couples_list

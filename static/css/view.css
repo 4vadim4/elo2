@@ -1,0 +1,159 @@
+html, body {
+   height: 100%;
+   margin-right: 5%;
+   margin-left: 5%;
+}
+
+body {
+  background: white;
+  color: #222222;
+  padding: 0;
+  margin: 0;
+  font-family:Verdana, Arial, Helvetica, serif;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1.2;
+  position: relative;
+  cursor: default;
+}
+
+a {
+    color: #008cba; /* цвет ссылок */
+    text-decoration: none;  /* убрать подчеркивание ссылок */
+   }
+
+a:visited {
+    color: #008cba; /* цвет посещенных ссылок */
+    text-decoration: none;
+   }
+
+a:active {
+    color: #0058a0; /* цвет активных ссылок */
+    text-decoration: none;
+   }
+
+a:hover {
+    color: #0058a0; /* цвет ссылоки при наведении */
+    text-decoration: none;
+   }
+
+table {
+    width: auto;
+    margin: auto;
+}
+
+  table td {
+    border: 1px solid #008cba;
+    text-align: center;
+    padding: 7px;
+}
+
+#td_menu {
+    text-align: left;
+}
+
+#top-bar {
+  overflow: hidden;
+  height: 45px;
+  position: relative;
+  background: #333333;
+}
+/*
+display:block;
+	margin: auto;
+    text-align: center;
+	padding:10px, 10px;
+	list-style:none;
+	font-size:19px;
+	font-weight:normal;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+
+
+  border:1px solid red;
+*/
+#top-bar-section p {
+    float: right; /* выравнивания внутреннего дива */
+    width: 25%;
+    margin-right: 20px;  /* отступ от правой границы */
+    text-align:right; /* выравнивания текста в диве */
+    color: #333333;
+}
+
+#top-bar-section a {
+    color: white; /* цвет ссылок */
+    text-decoration: none;  /* убрать подчеркивание ссылок */
+}
+
+#top-bar-section a:hover {
+    color: #006688; /* цвет ссылоки при наведении */
+    text-decoration: none;
+   }
+
+#topnav{
+    margin: auto;
+    text-align: center;
+    font-size: 21px;
+   	font-weight:normal;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+#search_top {
+    width:100%;
+    height:100px;
+}
+
+#search {
+    width:400px;
+    height:100px;
+    float:right;
+
+}
+
+#login_main{
+    width:100%;
+    height:200px;
+
+
+}
+
+#login_activ {
+    width: 400px;
+    margin: auto;
+    text-align: right;
+}
+
+#login_button {
+    width:25%;
+    margin: auto;
+
+}
+
+#login_buttom {
+    width:100%;
+    height:200px;
+
+}
+
+#footer {
+    background: #333333;
+
+    color: white; /* Цвет текста */
+    width: 100%; /* Ширина слоя */
+    height: 50px;
+   }
+
+#load{
+    position: relative;
+    text-align: center;
+/*    margin-right: 20px; */
+
+}
+
+#form_cas{
+    width: 450px;
+    margin: auto;
+    text-align: right;
+
+}
+
+

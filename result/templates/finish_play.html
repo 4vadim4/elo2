@@ -2,13 +2,19 @@
 
 {% block finish_play %}
 
-    <h2>Игроки разыграли разыграли все возможне варианты между собой.</h2>
-    <br><br>
-    <h2>Итоги игр:</h2>
+    <center>
+        <h2>Игроки разыграли разыграли все возможне варианты между собой.</h2>
+       
+        <h2>Итоги игр:</h2>
+    </center>
 
-    <div class="large-offset-3">
+    <div id="load">
     <br><br>
     <table border="1">
+            <tr>
+                <td><b>Ф.И.О.</b></td>
+                <td><b>Швейцарская система</b></td>
+            </tr>
         {% for player in swiss_players %}
         <tr><td>{{ player.bill_fio }}</td><td>{{ player.swiss_bill_score }}</td></tr>
         {% endfor %}
@@ -16,15 +22,26 @@
 
     <br><br>
 
-    <div class="large-offset-3">
+
     <br><br>
     <table border="1">
+            <tr>
+                <td><b>Ф.И.О.</b></td>
+                <td><b>Показатель ЭЛО</b></td>
+                <td><b>Коэфициент</b></td>
+                <td><b>Мат. ожидание кол. очков</b></td>
+            </tr>
         {% for value in swiss_players %}
         <tr><td>{{ value.bill_fio }}</td><td>{{ value.bill_elo }}</td><td>{{ value.bill_koef }}</td><td>{{ value.bill_mat_ozh }}</td></tr>
         {% endfor %}
     </table>
     <br><br>
-
+<hr>
+    <br>
+    <h4>Обнулить историю сыграных партий (без сброса заработанных очков)</h4>
+    <form action="{% url 'reset' %}">
+        <input type="submit" value="Reset">
+    </form>
 </div>
 
 

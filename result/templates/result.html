@@ -1,9 +1,15 @@
 {% extends 'index.html' %}
 
 {% block result %}
-    <div class="large-offset-3">
+<div id="load">
     <br><br>
     <table border="1">
+            <tr>
+                <td><b>Ф.И.О.</b></td>
+                <td><b>Показатель ЭЛО</b></td>
+                <td><b>Коэфициент</b></td>
+                <td><b>Мат. ожидание кол. очков</b></td>
+            </tr>
         {% for value in index %}
         <tr><td>{{ value.bill_fio }}</td><td>{{ value.bill_elo }}</td><td>{{ value.bill_koef }}</td><td>{{ value.bill_mat_ozh }}</td></tr>
         {% endfor %}
@@ -11,12 +17,12 @@
     <br><br>
     <form action="{% url 'xindex' %}" method="post">
         {% csrf_token %}
-        {{ form }}
+        {{ form.as_p }}
 
         <br>
         <input type="submit" class="button-bar" value="Добавить участника">
     </form>
-    </div>
+</div>
 
 
 

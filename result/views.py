@@ -1,7 +1,7 @@
 from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
-from .models import Bill, Couples_List
+from .models import Bill
 from .forms import AddData
 from django.core.context_processors import csrf
 from django.contrib import auth
@@ -13,6 +13,11 @@ import copy
 
 def welcome(request):
         return render_to_response('welcome.html')
+
+def logout(request):
+    auth.logout(request)
+#    return redirect('/')
+    return render_to_response('welcome.html')
 
 
 def index(request):
@@ -94,6 +99,7 @@ def add_res(request):
         Rating_A_new = round(Bill.objects.get(bill_fio=y4astnik1).bill_elo + K * (res_igri1 - Expect_A), 1)
         rating_A = Bill.objects.get(bill_fio=y4astnik1)
         rating_A.bill_elo = Rating_A_new
+        rating_A.bill_kol_igr = rating_A.bill_kol_igr + 1
         rating_A.save()
 
 
@@ -109,6 +115,7 @@ def add_res(request):
         Rating_B_new = round(Bill.objects.get(bill_fio=y4astnik2).bill_elo + K * (res_igri2 - Expect_B), 1)
         rating_B = Bill.objects.get(bill_fio=y4astnik2)
         rating_B.bill_elo = Rating_B_new
+        rating_B.bill_kol_igr = rating_B.bill_kol_igr + 1
         rating_B.save()
 
 
@@ -163,11 +170,13 @@ def first_step(request):
                 player_name = re.sub(r'[^\w\s-]+', r'', player).strip()
                 standoff = Bill.objects.get(bill_fio = player_name)
                 standoff.swiss_bill_score = standoff.swiss_bill_score + 0.5
+                standoff.bill_kol_igr = standoff.bill_kol_igr + 1
                 standoff.save()
 
         else:
             bill = Bill.objects.get(bill_fio = value)
             bill.swiss_bill_score = bill.swiss_bill_score + 1
+            bill.bill_kol_igr = bill.bill_kol_igr + 1
             bill.save()
 
 
@@ -211,6 +220,11 @@ def first_step(request):
                     rival_2 = Bill.objects.get(id = spisok[1])
                     rival_2.swiss_rivel = str(rival_2.swiss_rivel) + ', ' + str(spisok[0])
                     rival_2.save()
+
+
+
+
+
 
 
 
@@ -293,6 +307,11 @@ def first_step(request):
                               context_instance=RequestContext(request))
 
 
+def reset(request):
+    Bill.objects.all().update(swiss_rivel='')
+    return redirect('/index')
+#    return render_to_response('index.html',
+ #                             context_instance=RequestContext(request))
 
 
 

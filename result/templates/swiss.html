@@ -2,21 +2,31 @@
 
 {% block swiss %}
 
-<div class="large-offset-3">
+<div id="load">
     <br><br>
     <table border="1">
+            <tr>
+                <td><b>Ф.И.О.</b></td>
+                <td><b>Показатель ЭЛО</b></td>
+                <td><b>Коэфициент</b></td>
+                <td><b>Мат. ожидание кол. очков</b></td>
+            </tr>
         {% for value in index %}
         <tr><td>{{ value.bill_fio }}</td><td>{{ value.bill_elo }}</td><td>{{ value.bill_koef }}</td><td>{{ value.bill_mat_ozh }}</td></tr>
         {% endfor %}
     </table>
     <br><br>
 
-</div>
+<hr>
 
 
-<div class="large-offset-3">
+
     <br><br>
     <table border="1">
+            <tr>
+                <td><b>Ф.И.О.</b></td>
+                <td><b>Швейцарская система</b></td>
+            </tr>
         {% for swiss_value in nov_por %}
         <tr><td>{{ swiss_value.bill_fio }}</td><td>{{ swiss_value.swiss_bill_score }}</td></tr>
         {% endfor %}
@@ -40,7 +50,7 @@
                              {{ single_player_if_yes }} <br>
                         {% endfor %}
                     </td>
-                    <td>
+                    <td id="td_menu">
                         {% for single_player in opponents_player %}
                             <input type="radio" name="{{ opponents_player }}" value="{{ single_player }}">{{ single_player }} <br>
                         {% endfor %}
@@ -56,7 +66,7 @@
                             {% endif %}
                         {% endfor %}
                     </td>
-                    <td>
+                    <td id="td_menu">
                         {% for single_player in opponents_player %}
                             {% if single_player != None %}
                             <input type="radio" name="{{ opponents_player }}" value="{{ single_player }}" checked>{{ single_player}} <br>

@@ -1,5 +1,0 @@
-Help on method_descriptor:
-
-rreemmoovvee(...)
-    L.remove(value) -- remove first occurrence of value.
-    Raises ValueError if the value is not present.

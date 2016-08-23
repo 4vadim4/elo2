@@ -1,0 +1,26 @@
+{% extends 'welcome.html' %}
+
+{% block login %}
+ <div id="login_main">
+    <div id="login_activ">
+
+
+
+        <form method="post" action="">
+        {% csrf_token %}
+          {{form.as_p}}
+            <input type="hidden" name="next" value="{{next}}" />
+                <div id="login_button">
+                    <input type="submit" value="Login">
+                </div>
+        </form>
+
+    </div>
+</div>
+
+<div id="login_buttom">
+</div>
+{% endblock %}
+
+
+

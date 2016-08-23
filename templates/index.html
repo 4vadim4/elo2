@@ -3,23 +3,34 @@
 <html>
 <head>
     <title>Результаты</title>
-    <link rel="stylesheet" type="text/css" href="{% static "css/foundation.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "css/view.css" %}">
 </head>
 <body>
-<div class="top-bar">
-    <section class="top-bar-section">
-        <ul class="right">
+
+
+<div id="top-bar">
+    <div id="top-bar-section">
+
             {% if username %}
-                <li><a href="/auth/logout/">Выйти ({{ username }})</a></li>
+                <p><a href="{% url 'logout' %}">Выйти ({{ username }})</a></p>
             {% else %}
-                <li><a href="/auth/login/">Войти</a></li>
+                <p><a href="{% url 'openlogin' %}?next={{request.path}}">Войти</a></p>
             {% endif %}
-        </ul>
-    </section>
+
+    </div>
 </div>
+
+
+
 <p><h2><a href="{% url 'xindex' %}">Home</a></h2></p>
 <br><br>
+<hr>
 
+{% if not username %}
+    <div id="load">
+<centre>Сапсибо, что с нами ! <br> Регистрируйтесь либо проходите по ссылке "Home"</centre>
+    </div>
+{% endif %}
 {% block welcome %}{% endblock %}
 
 {% block result %}{% endblock %}
@@ -29,7 +40,6 @@
 {% block swiss %}{% endblock %}
 
 {% block swiss_result %}{% endblock %}
-{% block swiss_result_2 %}{% endblock %}
 
 {% block finish_play %}{% endblock %}
 
